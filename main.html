@@ -5,6 +5,7 @@
   <title>메인 화면</title>
   <style>
     body {
+      /* 화면 전체에 배경 이미지를 적용 */
       margin: 0;
       padding: 0;
       height: 100vh;
@@ -13,49 +14,43 @@
       background-position: center;
       background-repeat: no-repeat;
       overflow: hidden;
-    } 
+    }
     .container {
+      /* 문(door)들이 배치될 기준이 되는 부모 박스 */
       position: relative;
       width: 100%;
       height: 100%;
     }
     .door {
+      /* 문 하나의 크기와 위치를 조절하는 기본 스타일 */
       position: absolute;
-      width: 12vw;        
-      height: 18vw;          
-      min-width: 60px;      
+      width: 12vw;
+      height: 18vw;
+      min-width: 60px;
       min-height: 90px;
-      transition: transform 0.3s;
+      transition: transform 0.3s; /* 부드럽게 커지도록 */
     }
     .door:hover {
+      /* 문 위에 마우스를 올리면 살짝 커짐 */
       transform: scale(1.05);
     }
     .door img {
       width: 100%;
-      height: 100%; 
-      object-fit: cover;  
+      height: 100%;
+      object-fit: cover;
     }
-    .door1 {
-      top: 50%;
-      left: 13%;
-    }
-    .door2 {
-      top: 49%;
-      left: 42%;
-    }
-    .door3 {
-      top: 57%;
-      left: 63%;
-    } 
-    .door4 {
-      top: 59%;
-      left: 85%;
-    }
+    /* 각 문(봄, 여름, 가을, 겨울)마다 위치를 다르게 지정 */
+    .door1 { top: 50%; left: 13%; }
+    .door2 { top: 49%; left: 42%; }
+    .door3 { top: 57%; left: 63%; }
+    .door4 { top: 59%; left: 85%; }
   </style>
 </head>
 <body>
   <div class="container">
+    <!-- 봄 문: 클릭하면 spring.html로 쿼리와 함께 이동 -->
     <a href="spring.html?season=spring" class="door door1"><img src="./assets/spring-door.png"></a>
+    <!-- 여름/가을/겨울 문: (샘플, 추후 확장 가능) -->
     <a href="summer.html" class="door door2"><img src="./assets/summer-door.png"></a>
     <a href="fall.html" class="door door3"><img src="./assets/fall-door.png"></a>
     <a href="winter.html" class="door door4"><img src="./assets/winter-door.png"></a>

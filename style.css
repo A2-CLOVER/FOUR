@@ -1,7 +1,7 @@
 body, html {
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow: hidden; /* 스크롤바 안 보이게 */
 }
 
 #container {
@@ -13,9 +13,10 @@ body, html {
 #background {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* 이미지를 꽉 채워줌 */
 }
 
+/* 아래는 main.html의 문(door)에 사용되는 스타일(서브화면에선 사용 안함) */
 .door {
   position: absolute;
   width: 250px;
@@ -28,9 +29,10 @@ body, html {
 }
 
 .hidden {
-  display: none;
+  display: none; /* 이 클래스가 붙으면 안 보이게 됨 */
 }
 
+/* 블록(계단) 하나의 스타일 */
 .block {
   position: absolute;
   width: 180px;
@@ -38,22 +40,25 @@ body, html {
   background-size: cover;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
+  justify-content: flex-end;  /* 안의 입력창/체크박스를 아래쪽에 붙임 */
+  align-items: center;        /* 가운데 정렬 */
   padding-bottom: 20px;
   box-sizing: border-box;
   z-index: 1;
 }
 
+/* 블록 내부에 있는 텍스트 입력창 */
 .block-input {
   width: 80%;
   margin-bottom: 4px;
 }
 
+/* 블록 내부 체크박스 */
 .block-check {
   margin-top: 4px;
 }
 
+/* 캐릭터(동전 등)가 보일 위치와 크기 */
 .character {
   position: absolute;
   width: 100px;
@@ -63,6 +68,7 @@ body, html {
   z-index: 2;
 }
 
+/* 완료 이미지(클릭 가능) */
 #complete-image {
   position: absolute;
   top: 50%;
@@ -74,6 +80,7 @@ body, html {
   cursor: pointer;
 }
 
+/* 블록과 캐릭터들이 그려질 영역 */
 #block-stage {
   position: absolute;
   width: 100%;
