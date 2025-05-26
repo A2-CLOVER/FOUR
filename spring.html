@@ -8,12 +8,22 @@
 <body>
   <div id="container">
     <img id="background">
+    <button id="missionBtn" style="position:absolute;top:30px;left:40px;z-index:20;padding:10px 22px;font-size:1.05em;border-radius:12px;border:none;background:#43a047;color:#fff;cursor:pointer;">미션</button>
     <button id="editBtn" style="position:absolute;top:30px;right:40px;z-index:20;padding:10px 22px;font-size:1.05em;border-radius:12px;border:none;background:#1976d2;color:#fff;cursor:pointer;">금액 수정하기</button>
     <div id="block-stage" class="hidden"></div>
     <img src="assets/complete.png" id="complete-image" class="hidden">
   </div>
 
-  <!-- 커스텀 모달 팝업 -->
+  <!-- 미션 모달 팝업 -->
+  <div id="missionModal" style="display:none; position:fixed; z-index:9999; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.32); align-items:center; justify-content:center;">
+    <div id="missionModalContent" style="background:#fff; border-radius:16px; min-width:260px; max-width:92vw; margin:20px; box-shadow:0 6px 32px rgba(0,0,0,0.15); text-align:center; padding:36px 24px 24px 24px;position:relative;">
+      <div style="font-weight:bold;font-size:1.18em;margin-bottom:14px;">미션 관리</div>
+      <div id="missionList"></div>
+      <button id="missionCloseBtn" style="margin-top:28px;padding:7px 30px; background:#1976d2; color:#fff; border:none; border-radius:8px; font-size:1.09em; cursor:pointer;">닫기</button>
+    </div>
+  </div>
+
+  <!-- 커스텀 알림 팝업 -->
   <div id="customModal" style="display:none; position:fixed; z-index:9999; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.32); align-items:center; justify-content:center;">
     <div id="customModalContent" style="background:#fff; border-radius:16px; min-width:240px; max-width:80vw; margin:20px; box-shadow:0 6px 32px rgba(0,0,0,0.15); text-align:center; padding:32px 24px 24px 24px;">
       <div id="customModalMsg" style="font-size:1.07em; line-height:1.6;"></div>
