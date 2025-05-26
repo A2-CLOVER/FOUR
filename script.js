@@ -40,6 +40,18 @@ let isEditing = false; // 수정모드 여부
 
 function showBlocks(goal) {
   blockStage.classList.remove("hidden");
+
+  // 진행도 표시용 텍스트 요소 추가
+  const progressText = document.createElement("div");
+  progressText.id = "progressText";
+  progressText.style.position = "absolute";
+  progressText.style.top = "10px";
+  progressText.style.left = "10px";
+  progressText.style.fontSize = "30px";
+  progressText.style.color = "#333";
+  progressText.textContent = `진행도: 0 / ${BLOCK_COUNT}`;
+  blockStage.appendChild(progressText);
+
   let perStep = Math.floor(goal / BLOCK_COUNT);
   let remain = goal - (perStep * BLOCK_COUNT);
   for (let i = 0; i < BLOCK_COUNT; i++) {
@@ -60,6 +72,14 @@ function showBlocks(goal) {
     checkbox.type = "checkbox";
     checkbox.className = "block-check";
     checkbox.onchange = () => {
+      // 왼쪽 블록이 체크되어야 체크 가능
+      if (i > 0 && !completed[i - 1]) {
+        showModal("왼쪽 블록을 먼저 완료해야 합니다.", () => {
+          checkbox.checked = false;
+        });
+        return;
+      }
+
       const text = input.value.trim();
       if (text === "" || isNaN(Number(text)) || Number(text) <= 0) {
         showModal("올바른 금액을 입력하세요.", function() {
@@ -123,6 +143,7 @@ editBtn.onclick = function() {
 // 다음 블록 입력 가능 및 캐릭터 위치
 function enableNextBlockInput(index) {
   updateCharacterPosition();
+  updateProgress(); // 진행도 갱신
 }
 
 // 캐릭터 위치 갱신
@@ -141,6 +162,15 @@ function updateCharacterPosition() {
   const blockBottom = parseFloat(targetBlock.style.bottom);
   character.style.left = `${blockLeft + 3}%`;
   character.style.bottom = `${blockBottom + 10}%`;
+}
+
+// 진행도 텍스트 갱신
+function updateProgress() {
+  const progress = completed.filter(c => c).length;
+  const progressText = document.getElementById("progressText");
+  if (progressText) {
+    progressText.textContent = `진행도: ${progress} / ${BLOCK_COUNT}`;
+  }
 }
 
 // 완료 이미지 클릭시 메인으로 이동(새로 시작)
