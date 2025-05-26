@@ -1,67 +1,74 @@
-// 배경 이미지를 담당할 요소(id가 background인 img 태그)
-const background = document.getElementById("background");
-// 블록(계단)과 캐릭터가 나타날 영역(div)
-const blockStage = document.getElementById("block-stage");
-
-// 총 블록(계단) 개수 설정
-const BLOCK_COUNT = 4;
-// 블록 정보를 담을 배열, 입력 완료 여부를 체크할 배열
-let blocks = [];
-let completed = Array(BLOCK_COUNT).fill(false);
-
-// 캐릭터(동전 등) 변수
-let character;
-
-// --- (아주 중요) 쿼리로 진입했는지 확인해서 아니면 메인으로 돌려보냄 ---
-const params = new URLSearchParams(window.location.search);
-const season = params.get("season");
-
-// 쿼리가 "spring"이 아니면 main.html로 강제 이동!
-if (season !== "spring") {
-  window.location.replace("main.html");
-} else {
-  // 쿼리가 맞으면(=메인에서 제대로 진입) 배경을 봄으로 바꿔주고 블록 생성!
-  background.src = "assets/spring-bg.png";
-  showBlocks();
+// 커스텀 모달 팝업 함수
+function showModal(msg, callback) {
+  const modal = document.getElementById('customModal');
+  const msgBox = document.getElementById('customModalMsg');
+  const okBtn = document.getElementById('customModalOk');
+  msgBox.textContent = msg;
+  modal.style.display = "flex";
+  okBtn.focus();
+  okBtn.onclick = function() {
+    modal.style.display = "none";
+    if (callback) callback();
+  };
+  // 엔터로도 닫기
+  modal.onkeydown = function(e) { if(e.key==="Enter"){ okBtn.click(); } };
 }
 
-// --- 아래는 블록(계단)과 캐릭터를 생성하고 동작 제어하는 함수들 ---
+// 배경 이미지, 블록 영역 가져오기
+const background = document.getElementById("background");
+const blockStage = document.getElementById("block-stage");
+const editBtn = document.getElementById("editBtn");
 
-// 블록과 캐릭터(동전)를 화면에 보여줌
-function showBlocks() {
-  blockStage.classList.remove("hidden"); // 감춰져 있던 block-stage를 보이게
+const BLOCK_COUNT = 4;
+let blocks = [];
+let completed = Array(BLOCK_COUNT).fill(false);
+let character;
+
+// 쿼리에서 season과 goal 값 받기
+const params = new URLSearchParams(window.location.search);
+const season = params.get("season");
+const goal = Number(params.get("goal"));
+
+if (season !== "spring" || isNaN(goal) || goal <= 0) {
+  window.location.replace("main.html");
+} else {
+  background.src = "assets/spring-bg.png";
+  showBlocks(goal);
+}
+
+let isEditing = false; // 수정모드 여부
+
+function showBlocks(goal) {
+  blockStage.classList.remove("hidden");
+  let perStep = Math.floor(goal / BLOCK_COUNT);
+  let remain = goal - (perStep * BLOCK_COUNT);
   for (let i = 0; i < BLOCK_COUNT; i++) {
-    // 블록(계단) 하나 만들기
     const block = document.createElement("div");
     block.classList.add("block");
-    // 계단식 위치
     block.style.left = `${10 + i * 25}%`;
     block.style.bottom = `${i * 18}%`;
     block.style.backgroundImage = `url('assets/block.png')`;
 
-    // 블록 안에 입력창 추가
     const input = document.createElement("input");
-    input.type = "text";
-    input.placeholder = "내용 입력";
+    input.type = "number";
+    input.placeholder = "금액 입력";
     input.className = "block-input";
-    // 첫번째만 입력 가능, 다음 블록은 체크박스가 체크되어야 입력 가능
-    input.disabled = i !== 0;
+    input.value = perStep + (i === 0 ? remain : 0);
+    input.disabled = true; // 기본 잠금
 
-    // 블록 안에 체크박스 추가
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.className = "block-check";
     checkbox.onchange = () => {
       const text = input.value.trim();
-      // 아무 내용 없이 체크하려고 하면 경고
-      if (text === "") {
-        alert("내용을 입력해야 체크할 수 있습니다.");
-        checkbox.checked = false;
+      if (text === "" || isNaN(Number(text)) || Number(text) <= 0) {
+        showModal("올바른 금액을 입력하세요.", function() {
+          checkbox.checked = false;
+        });
         return;
       }
       completed[i] = checkbox.checked;
       enableNextBlockInput(i + 1);
-      // 마지막 블록까지 체크되면 완료 이미지 보여줌
       if (i === BLOCK_COUNT - 1 && checkbox.checked) {
         completeImage.classList.remove("hidden");
       }
@@ -74,10 +81,9 @@ function showBlocks() {
     blockStage.appendChild(block);
   }
 
-  // 캐릭터(동전 등) 하나 만들기
+  // 캐릭터 생성
   character = document.createElement("div");
   character.classList.add("character");
-  // 첫 번째 블록 위에 위치
   const firstBlock = blocks[0].block;
   const blockLeft = parseFloat(firstBlock.style.left);
   const blockBottom = parseFloat(firstBlock.style.bottom);
@@ -88,15 +94,38 @@ function showBlocks() {
   blockStage.appendChild(character);
 }
 
-// 다음 블록을 입력 가능하게 만들고, 캐릭터 위치 갱신
-function enableNextBlockInput(index) {
-  if (index < blocks.length && completed[index - 1]) {
-    blocks[index].input.disabled = false;
+// 수정 버튼 동작
+editBtn.onclick = function() {
+  if (!isEditing) {
+    // 수정 시작(잠금 해제)
+    for (const {input} of blocks) {
+      input.disabled = false;
+    }
+    isEditing = true;
+    editBtn.textContent = "수정 완료";
+  } else {
+    // 합계 체크
+    const sum = blocks.reduce((acc, {input}) => acc + Number(input.value || 0), 0);
+    if (sum !== goal) {
+      showModal(`입력한 금액의 합이 목표금액(${goal})과 일치해야 합니다!`);
+      return;
+    }
+    // 다시 잠금
+    for (const {input} of blocks) {
+      input.disabled = true;
+    }
+    isEditing = false;
+    editBtn.textContent = "금액 수정하기";
+    showModal("금액 수정이 완료되었습니다!");
   }
+};
+
+// 다음 블록 입력 가능 및 캐릭터 위치
+function enableNextBlockInput(index) {
   updateCharacterPosition();
 }
 
-// 캐릭터가 마지막으로 체크된 블록 위로 이동
+// 캐릭터 위치 갱신
 function updateCharacterPosition() {
   let lastCheckedIndex = -1;
   for (let i = 0; i < completed.length; i++) {
@@ -114,7 +143,7 @@ function updateCharacterPosition() {
   character.style.bottom = `${blockBottom + 10}%`;
 }
 
-// 완료 이미지를 클릭하면 메인화면으로 이동(새로 시작)
+// 완료 이미지 클릭시 메인으로 이동(새로 시작)
 const completeImage = document.getElementById("complete-image");
 completeImage.onclick = () => {
   window.location.replace("main.html");
