@@ -20,13 +20,13 @@ const missionBtn = document.getElementById("missionBtn");
 const missionModal = document.getElementById("missionModal");
 const missionList = document.getElementById("missionList");
 const missionCloseBtn = document.getElementById("missionCloseBtn");
+const progressText = document.getElementById("progressText");
 
 const BLOCK_COUNT = 4;
 let blocks = [];
 let completed = Array(BLOCK_COUNT).fill(false);
 let character;
 
-// 쿼리에서 season과 goal 값 받기
 const params = new URLSearchParams(window.location.search);
 const season = params.get("season");
 const goal = Number(params.get("goal"));
@@ -43,6 +43,10 @@ let isEditing = false;
 // 계단(블록) 생성 및 초기화
 function showBlocks(goal) {
   blockStage.classList.remove("hidden");
+
+  // 진행도(상단 고정) - 생성은 html에서 미리 되어있으니 갱신만 하면 됨
+  updateProgress();
+
   let perStep = Math.floor(goal / BLOCK_COUNT);
   let remain = goal - (perStep * BLOCK_COUNT);
   for (let i = 0; i < BLOCK_COUNT; i++) {
@@ -93,16 +97,15 @@ function showBlocks(goal) {
 
 // 미션 버튼 클릭 시
 missionBtn.onclick = function() {
-  if (missionBtn.disabled) return; // 금액 수정 중엔 반응 없음
+  if (missionBtn.disabled) return;
   missionModal.style.display = "flex";
   updateMissionList();
 };
-// 미션창 닫기
 missionCloseBtn.onclick = function() {
   missionModal.style.display = "none";
 };
 
-// 미션 모달에 계단별 미션 내용/달성버튼 출력
+// 미션 모달 계단별 미션 내용/달성버튼 출력
 function updateMissionList() {
   missionList.innerHTML = "";
   for (let i = 0; i < blocks.length; i++) {
@@ -127,7 +130,16 @@ function updateMissionList() {
     missionBtn.style.color = "#fff";
     missionBtn.style.cursor = checkbox.checked ? "not-allowed" : "pointer";
     missionBtn.disabled = checkbox.checked;
+
+    // 이전 계단이 체크 안됐으면 달성버튼도 비활성화
+    if (i > 0 && !blocks[i - 1].checkbox.checked) {
+      missionBtn.disabled = true;
+      missionBtn.style.background = "#ccc";
+      missionBtn.style.cursor = "not-allowed";
+    }
+
     missionBtn.onclick = function() {
+      if (missionBtn.disabled) return;
       if (input.value === "" || isNaN(Number(input.value)) || Number(input.value) <= 0) {
         showModal("올바른 금액을 입력한 후 달성할 수 있습니다!");
         return;
@@ -138,11 +150,12 @@ function updateMissionList() {
       missionBtn.disabled = true;
       missionBtn.style.background = "#aaa";
       missionBtn.style.cursor = "not-allowed";
+      updateMissionList(); // 버튼 상태 즉시 새로고침
+      updateProgress();
     };
 
     wrapper.appendChild(missionDesc);
     wrapper.appendChild(missionBtn);
-
     missionList.appendChild(wrapper);
   }
 }
@@ -180,6 +193,7 @@ editBtn.onclick = function() {
 
 function enableNextBlockInput(index) {
   updateCharacterPosition();
+  updateProgress();
 }
 
 function updateCharacterPosition() {
@@ -197,6 +211,14 @@ function updateCharacterPosition() {
   const blockBottom = parseFloat(targetBlock.style.bottom);
   character.style.left = `${blockLeft + 3}%`;
   character.style.bottom = `${blockBottom + 10}%`;
+}
+
+// 진행도 텍스트 갱신
+function updateProgress() {
+  const progress = completed.filter(c => c).length;
+  if (progressText) {
+    progressText.textContent = `진행도: ${Math.round((progress / BLOCK_COUNT) * 100)}%`;
+  }
 }
 
 const completeImage = document.getElementById("complete-image");
