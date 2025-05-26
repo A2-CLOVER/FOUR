@@ -43,18 +43,6 @@ let isEditing = false;
 // 계단(블록) 생성 및 초기화
 function showBlocks(goal) {
   blockStage.classList.remove("hidden");
-
-  // 진행도 표시용 텍스트 요소 추가
-  const progressText = document.createElement("div");
-  progressText.id = "progressText";
-  progressText.style.position = "absolute";
-  progressText.style.top = "10px";
-  progressText.style.left = "10px";
-  progressText.style.fontSize = "30px";
-  progressText.style.color = "#333";
-  progressText.textContent = `진행도: 0 %`;
-  blockStage.appendChild(progressText);
-
   let perStep = Math.floor(goal / BLOCK_COUNT);
   let remain = goal - (perStep * BLOCK_COUNT);
   for (let i = 0; i < BLOCK_COUNT; i++) {
@@ -76,24 +64,6 @@ function showBlocks(goal) {
     checkbox.className = "block-check";
     checkbox.disabled = true; // 미션창에서만 체크됨
     checkbox.onchange = () => {
-<<<<<<< HEAD
-=======
-      // 왼쪽 블록이 체크되어야 체크 가능
-      if (i > 0 && !completed[i - 1]) {
-        showModal("왼쪽 블록을 먼저 완료해야 합니다.", () => {
-          checkbox.checked = false;
-        });
-        return;
-      }
-
-      const text = input.value.trim();
-      if (text === "" || isNaN(Number(text)) || Number(text) <= 0) {
-        showModal("올바른 금액을 입력하세요.", function() {
-          checkbox.checked = false;
-        });
-        return;
-      }
->>>>>>> 8f425a99a67a5d977d2f50220ccf7a9adfefaae7
       completed[i] = checkbox.checked;
       enableNextBlockInput(i + 1);
       if (i === BLOCK_COUNT - 1 && checkbox.checked) {
@@ -210,7 +180,6 @@ editBtn.onclick = function() {
 
 function enableNextBlockInput(index) {
   updateCharacterPosition();
-  updateProgress(); // 진행도 갱신
 }
 
 function updateCharacterPosition() {
@@ -230,20 +199,6 @@ function updateCharacterPosition() {
   character.style.bottom = `${blockBottom + 10}%`;
 }
 
-<<<<<<< HEAD
-=======
-// 진행도 텍스트 갱신
-function updateProgress() {
-  const progress = completed.filter(c => c).length;
-  const progressText = document.getElementById("progressText");
-  if (progressText) {
-    progressText.textContent = `진행도: ${Math.round((progress / BLOCK_COUNT) * 100)}%`;
-
-  }
-}
-
-// 완료 이미지 클릭시 메인으로 이동(새로 시작)
->>>>>>> 8f425a99a67a5d977d2f50220ccf7a9adfefaae7
 const completeImage = document.getElementById("complete-image");
 completeImage.onclick = () => {
   window.location.replace("main.html");
