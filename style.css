@@ -1,7 +1,7 @@
 body, html {
   margin: 0;
   padding: 0;
-  overflow: hidden; /* 스크롤바 안 보이게 */
+  overflow: hidden;
 }
 
 #container {
@@ -10,29 +10,57 @@ body, html {
   height: 100vh;
 }
 
+/* 미션 버튼 - 좌상단 */
+#missionBtn {
+  position: absolute;
+  top: 30px;
+  left: 40px;
+  z-index: 20;
+  padding: 10px 22px;
+  font-size: 1.05em;
+  border-radius: 12px;
+  border: none;
+  background: #43a047;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* 진행도 - 우상단 */
+#progressText {
+  position: absolute;
+  top: 30px;
+  right: 40px;
+  z-index: 21;
+  font-size: 1.27em;
+  color: #333;
+  font-weight: bold;
+}
+
+/* 금액 수정 버튼 - 우하단 고정 */
+#editBtn {
+  position: fixed;
+  bottom: 32px;
+  right: 40px;
+  z-index: 22;
+  padding: 13px 34px;
+  font-size: 1.09em;
+  border-radius: 16px;
+  border: none;
+  background: #1976d2;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.13);
+}
+
+/* block, character 등 기존 스타일 유지 */
 #background {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 이미지를 꽉 채워줌 */
+  object-fit: cover;
 }
-
-/* 아래는 main.html의 문(door)에 사용되는 스타일(서브화면에선 사용 안함) */
-.door {
-  position: absolute;
-  width: 250px;
-  height: 400px;
-  left: 20%;
-  top: 75%;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  z-index: 10;
-}
-
 .hidden {
-  display: none; /* 이 클래스가 붙으면 안 보이게 됨 */
+  display: none;
 }
-
-/* 블록(계단) 하나의 스타일 */
 .block {
   position: absolute;
   width: 180px;
@@ -40,25 +68,19 @@ body, html {
   background-size: cover;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;  /* 안의 입력창/체크박스를 아래쪽에 붙임 */
-  align-items: center;        /* 가운데 정렬 */
+  justify-content: flex-end;
+  align-items: center;
   padding-bottom: 20px;
   box-sizing: border-box;
   z-index: 1;
 }
-
-/* 블록 내부에 있는 텍스트 입력창 */
 .block-input {
   width: 80%;
   margin-bottom: 4px;
 }
-
-/* 블록 내부 체크박스 */
 .block-check {
   margin-top: 4px;
 }
-
-/* 캐릭터(동전 등)가 보일 위치와 크기 */
 .character {
   position: absolute;
   width: 100px;
@@ -67,8 +89,7 @@ body, html {
   background-repeat: no-repeat;
   z-index: 2;
 }
-
-/* 완료 이미지(클릭 가능) */
+/* complete 이미지가 무조건 맨 위! */
 #complete-image {
   position: absolute;
   top: 50%;
@@ -76,16 +97,78 @@ body, html {
   height: 290px;
   width: 470px;
   transform: translate(-50%, -50%);
-  z-index: 999;
+  z-index: 20000;
   cursor: pointer;
 }
 
-/* 블록과 캐릭터들이 그려질 영역 */
-#block-stage {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  z-index: 5;
+/* 미션 모달 팝업 스타일 */
+#missionModal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.32);
+  align-items: center;
+  justify-content: center;
+}
+#missionModalContent {
+  background: #fff;
+  border-radius: 16px;
+  min-width: 260px;
+  max-width: 92vw;
+  margin: 20px;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.15);
+  text-align: center;
+  padding: 36px 24px 24px 24px;
+  position: relative;
+}
+.missionTitle {
+  font-weight: bold;
+  font-size: 1.18em;
+  margin-bottom: 14px;
+}
+#missionCloseBtn {
+  margin-top: 28px;
+  padding: 7px 30px;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.09em;
+  cursor: pointer;
+}
+
+/* 커스텀 팝업 */
+#customModal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.32);
+  align-items: center;
+  justify-content: center;
+}
+#customModalContent {
+  background: #fff;
+  border-radius: 16px;
+  min-width: 240px;
+  max-width: 80vw;
+  margin: 20px;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.15);
+  text-align: center;
+  padding: 32px 24px 24px 24px;
+}
+#customModalMsg {
+  font-size: 1.07em;
+  line-height: 1.6;
+}
+#customModalOk {
+  margin-top: 20px;
+  padding: 7px 28px;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.06em;
+  cursor: pointer;
 }
